@@ -20,17 +20,16 @@ function RemoveJammerItem(Player)
     end
 end
 
-QBCore.Commands.Add('disablejammers', 'Force disable all active jammers', {}, false, function(source)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if not Player or Player.PlayerData.job.name ~= 'admin' then
-        TriggerClientEvent('QBCore:Notify', source, 'You are not authorized to use this command.', 'error')
-        return
-    end
+lib.addCommand('disablejammers', {
+    help = 'Force disable all active jammers',
+    restricted = 'group.admin',
+}, function(source, args, raw)    
     for _, player in pairs(QBCore.Functions.GetPlayers()) do
         TriggerClientEvent('drz-jammer:forceDisable', tonumber(player))
     end
     print('[Jammer] All active jammers have been disabled by an admin.')
 end)
+
 
 RegisterServerEvent('drz-jammer:placeJammer', function(coords)
     local src = source

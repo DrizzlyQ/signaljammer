@@ -16,8 +16,9 @@ server_scripts {
     'config.lua'
 }
 
-shared_script '@qb-core/import.lua'
-
+shared_scripts {
+    '@ox_lib/init.lua',
+}
 dependency 'ox_lib'
 dependency 'bl_ui'
 
