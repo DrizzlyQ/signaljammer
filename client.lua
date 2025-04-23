@@ -33,8 +33,6 @@ RegisterNetEvent('drz-jammer:activateJammer', function(data)
     PlaceObjectOnGroundProperly(jammerEntity)
     SetEntityAsMissionEntity(jammerEntity, true, true)
 
-    TriggerServerEvent('drz-jammer:playNoise', data.coords)
-
     CreateThread(function()
         while isJammerActive do
             local myCoords = GetEntityCoords(PlayerPedId())

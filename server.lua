@@ -18,7 +18,6 @@ RegisterServerEvent('drz-jammer:placeJammer', function(coords)
         HackCooldown[src].fails = 0
     end
     HackCooldown[src].last = now
-
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
 
@@ -32,6 +31,7 @@ RegisterServerEvent('drz-jammer:placeJammer', function(coords)
     }
 
     TriggerClientEvent('drz-jammer:activateJammer', src, ActiveJammers[jammerId])
+    TriggerClientEvent('InteractSound_CL:PlayOnCoords', -1, coords, 'jammer_noise.ogg', 0.8)
 
     local identifiers = GetPlayerIdentifiers(src)
     local steam, license = "N/A", "N/A"
@@ -64,8 +64,4 @@ AddEventHandler('drz-jammer:logHackAttempt', function(success, targetSrc)
         ["color"] = success and 65280 or 16753920
     }}
     PerformHttpRequest(Webhook, function() end, "POST", json.encode({embeds = embed}), {['Content-Type'] = 'application/json'})
-end)
-
-RegisterServerEvent('drz-jammer:playNoise', function(coords)
-    TriggerClientEvent('InteractSound_CL:PlayOnCoords', -1, coords, 'jammer_noise.ogg', 0.8)
 end)
