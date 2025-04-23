@@ -1,23 +1,35 @@
+-- Force disable from admin
+RegisterNetEvent('drz-jammer:forceDisable', function()
+    if isJammerActive then
+        isJammerActive = false
+        if jammerEntity then
+            DeleteEntity(jammerEntity)
+            jammerEntity = nil
+        end
+        QBCore.Functions.Notify("All signal jammers were disabled by an admin.", 'error')
+    end
+end)
+
+-- replaced custom NUI with bl_ui pattern minigame
 local QBCore = exports['qb-core']:GetCoreObject()
 local jammerData = nil
 local jammerEntity = nil
 local isJammerActive = false
 
 RegisterNetEvent('drz-jammer:useJammer', function()
-    TriggerEvent("bl_ui:open", {
-        type = "pattern",
-        time = 30,
-        difficulty = "medium"
-    }, function(success)
-        if success then
-            TriggerServerEvent('drz-jammer:logHackAttempt', true)
-            local coords = GetEntityCoords(PlayerPedId())
-            TriggerServerEvent('drz-jammer:placeJammer', coords)
-        else
-            TriggerServerEvent('drz-jammer:logHackAttempt', false)
-            QBCore.Functions.Notify('Hacking failed...', 'error')
-        end
-    end)
+    local success = exports.bl_ui:LightsOut(3, {
+        level = 2,
+        duration = 5000
+    })
+
+    if success then
+        TriggerServerEvent('drz-jammer:logHackAttempt', true)
+        local coords = GetEntityCoords(PlayerPedId())
+        TriggerServerEvent('drz-jammer:placeJammer', coords)
+    else
+        TriggerServerEvent('drz-jammer:logHackAttempt', false)
+        QBCore.Functions.Notify('Hacking failed...', 'error')
+    end
 end)
 
 RegisterNetEvent('drz-jammer:activateJammer', function(data)
