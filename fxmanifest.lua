@@ -1,7 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 
-description 'QBCore Signal Jammer Script'
+description 'QBX Signal Jammer Script with ox_lib Zones'
 
 author 'Drizzly'
 
@@ -19,3 +19,7 @@ server_scripts {
 shared_scripts {
     '@ox_lib/init.lua',
 }
+dependency 'ox_lib'
+dependency 'bl_ui'
+
+lua54 'yes'
