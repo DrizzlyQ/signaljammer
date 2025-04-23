@@ -1,6 +1,6 @@
 # QBX Signal Jammer 📡
 
-A highly immersive signal jammer script for QBCore-based FiveM servers. Players can place jammers that block phone and radio signals in a configurable radius and can be hacked by others.
+A highly immersive signal jammer script for QBX-based FiveM servers. Players can place jammers that block phone and radio signals in a configurable radius and can be hacked by others.
 
 ## 🔧 Features
 - Signal blocking within a 50m radius
