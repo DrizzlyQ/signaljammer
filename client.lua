@@ -1,4 +1,3 @@
-local QBCore = exports['qb-core']:GetCoreObject()
 local jammerData = nil
 local jammerEntity = nil
 local isJammerActive = false
@@ -21,7 +20,10 @@ RegisterNetEvent('drz-jammer:forceDisable', function()
             jammerZone:remove()
             jammerZone = nil
         end
-        QBCore.Functions.Notify('All signal jammers were disabled by an admin.', 'error')
+            lib.notify({
+            description = 'All signal jammers were disabled by an admin',
+            type = 'error'
+        })
     end
 end)
 
@@ -37,7 +39,10 @@ RegisterNetEvent('drz-jammer:useJammer', function()
         TriggerServerEvent('drz-jammer:placeJammer', coords)
     else
         TriggerServerEvent('drz-jammer:logHackAttempt', false)
-        QBCore.Functions.Notify('Hacking failed...', 'error')
+        lib.notify({
+        description = 'Hacking failed...',
+        type = 'error'
+        })
     end
 end)
 
@@ -78,5 +83,8 @@ RegisterNetEvent('drz-jammer:activateJammer', function(data)
         jammerZone:remove()
         jammerZone = nil
     end
-    QBCore.Functions.Notify("The jammer's battery is dead.", 'error')
+    lib.notify({
+        description = 'The jammer's battery is dead.',
+        type = 'error'
+        })
 end)
