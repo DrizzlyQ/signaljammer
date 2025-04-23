@@ -67,7 +67,7 @@ ensure qb-signaljammer
 
 ## 📷 Preview
 
-![jammer preview](https://imgur.com/a/nrrMgu9)
+![jammer preview](https://i.imgur.com/vTK2wu9.png)
 
 ## 🪪 License
 
