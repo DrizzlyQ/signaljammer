@@ -16,10 +16,11 @@ server_scripts {
     'config.lua'
 }
 
-shared_scripts {
-    '@ox_lib/init.lua',
-}
+shared_script '@ox_lib/init.lua'
+
 dependency 'ox_lib'
 dependency 'bl_ui'
+dependency 'ox_inventory'
+
 
 lua54 'yes'

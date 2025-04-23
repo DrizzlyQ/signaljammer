@@ -6,8 +6,9 @@ local Webhook = "YOUR_DISCORD_WEBHOOK_URL"
 -- Compatibility Layer
 function HasJammerItem(Player)
     if GetResourceState('ox_inventory') == 'started' then
-        return exports.ox_inventory:Search(Player.source, 'count', 'signal_jammer') > 0
-    else
+        print(source)       
+        return (exports.ox_inventory:Search(source, "count", 'signal_jammer') or 0) > 0        
+    else        
         return Player.Functions.GetItemByName('signal_jammer') ~= nil
     end
 end
@@ -20,16 +21,30 @@ function RemoveJammerItem(Player)
     end
 end
 
-lib.addCommand('disablejammers', {
-    help = 'Force disable all active jammers',
-    restricted = 'group.admin',
-}, function(source, args, raw)    
+-- ox_inventory item usage binding
+exports('UseableItem', function(item, source)
+    if item.name == 'signal_jammer' then
+        print(('Player %s used signal_jammer'):format(source)) 
+        TriggerClientEvent('drz-jammer:useJammer', source)
+    end
+end)
+
+exports.qbx_core:CreateUseableItem('signal_jammer', function(source,item)
+    TriggerClientEvent('drz-jammer:useJammer', source)
+end)
+
+
+QBCore.Commands.Add('disablejammers', 'Force disable all active jammers', {}, false, function(source)
+    local Player = QBCore.Functions.GetPlayer(source)
+    if not Player or Player.PlayerData.job.name ~= 'admin' then
+        TriggerClientEvent('QBCore:Notify', source, 'You are not authorized to use this command.', 'error')
+        return
+    end
     for _, player in pairs(QBCore.Functions.GetPlayers()) do
         TriggerClientEvent('drz-jammer:forceDisable', tonumber(player))
     end
     print('[Jammer] All active jammers have been disabled by an admin.')
 end)
-
 
 RegisterServerEvent('drz-jammer:placeJammer', function(coords)
     local src = source
@@ -99,3 +114,4 @@ AddEventHandler('drz-jammer:logHackAttempt', function(success, targetSrc)
     }}
     PerformHttpRequest(Webhook, function() end, "POST", json.encode({embeds = embed}), {['Content-Type'] = 'application/json'})
 end)
+

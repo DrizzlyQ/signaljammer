@@ -1,14 +1,15 @@
+local QBCore = exports['qb-core']:GetCoreObject()
 local jammerData = nil
 local jammerEntity = nil
 local isJammerActive = false
 local jammerZone = nil
+local enteredOnce = false
 
 RegisterNetEvent('drz-jammer:playNativeSound', function(coords)
     local soundId = GetSoundId()
     PlaySoundFromCoord(soundId, 'Crackle', coords.x, coords.y, coords.z, 'DLC_HEISTS_BIOLAB_FINALE_SOUNDS', false, 0, false)
 end)
 
--- Force disable from admin
 RegisterNetEvent('drz-jammer:forceDisable', function()
     if isJammerActive then
         isJammerActive = false
@@ -20,18 +21,12 @@ RegisterNetEvent('drz-jammer:forceDisable', function()
             jammerZone:remove()
             jammerZone = nil
         end
-            lib.notify({
-            description = 'All signal jammers were disabled by an admin',
-            type = 'error'
-        })
+        QBCore.Functions.Notify('All signal jammers were disabled by an admin.', 'error')
     end
 end)
 
 RegisterNetEvent('drz-jammer:useJammer', function()
-    local success = exports.bl_ui:LightsOut(3, {
-        level = 2,
-        duration = 5000
-    })
+    local success = true
 
     if success then
         TriggerServerEvent('drz-jammer:logHackAttempt', true)
@@ -39,10 +34,7 @@ RegisterNetEvent('drz-jammer:useJammer', function()
         TriggerServerEvent('drz-jammer:placeJammer', coords)
     else
         TriggerServerEvent('drz-jammer:logHackAttempt', false)
-        lib.notify({
-        description = 'Hacking failed...',
-        type = 'error'
-        })
+        QBCore.Functions.Notify('Hacking failed...', 'error')
     end
 end)
 
@@ -63,13 +55,26 @@ RegisterNetEvent('drz-jammer:activateJammer', function(data)
         coords = jammerData.coords,
         radius = jammerData.range,
         inside = function()
-            if exports["lb-phone"]:IsPhoneOpen() then
-                TriggerEvent("lb-phone:forceClose")
-            end
+            if enteredOnce then return end
+            enteredOnce = true
+
+            QBCore.Functions.Notify("Entered jammer zone", "primary")
             NetworkSetTalkerProximity(1.0)
+
+            CreateThread(function()
+                while isJammerActive and #(GetEntityCoords(PlayerPedId()) - jammerData.coords) < jammerData.range do
+                    if LocalPlayer.state.radioChannel and LocalPlayer.state.radioChannel > 0 then
+                        exports["pma-voice"]:setRadioChannel(0)
+                        QBCore.Functions.Notify("Signal interference. Radio disconnected.", "error", 2000)
+                    end
+                    Wait(1500)
+                end
+            end)
         end,
         onExit = function()
+            enteredOnce = false
             NetworkSetTalkerProximity(15.0)
+            QBCore.Functions.Notify("Left jammer zone", "inform")
         end,
         debug = false
     })
@@ -83,8 +88,5 @@ RegisterNetEvent('drz-jammer:activateJammer', function(data)
         jammerZone:remove()
         jammerZone = nil
     end
-    lib.notify({
-        description = 'The jammer's battery is dead.',
-        type = 'error'
-        })
+    QBCore.Functions.Notify("The jammer's battery is dead.", 'error')
 end)
