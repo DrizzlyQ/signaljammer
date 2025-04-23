@@ -112,7 +112,7 @@ Disable all active jammers:
 
 ## 👤 Credits
 
-- Script & logic: Drizzly + ChatGPT
+- Script & logic: Drizzly + Sxetikos
 - Hacking UI: Byte Labs [`bl_ui`](https://github.com/Byte-Labs-Studio/bl_ui)
 - Voice support: [`pma-voice`](https://github.com/AvarianKnight/pma-voice)
 
