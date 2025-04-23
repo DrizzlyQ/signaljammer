@@ -10,7 +10,7 @@ A highly immersive signal jammer script for QBX-based FiveM servers. Players can
 - Fully configurable & optimized
 
 ## 📦 Requirements
-- [QBCore Framework][(https://github.com/qbcore-framework/qb-core](https://github.com/Qbox-project)](https://github.com/Qbox-project)
+- [QBCore Framework](https://github.com/Qbox-project)
 - [InteractSound](https://github.com/plunkettscott/interact-sound)
 - A phone resource like `lb-phone`
 - [bl_ui](https://github.com/Byte-Labs-Studio/bl_ui) for the hacking minigame
