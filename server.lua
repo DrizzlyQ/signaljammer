@@ -1,10 +1,47 @@
-local HackCooldown = {}
 local QBCore = exports['qb-core']:GetCoreObject()
 local ActiveJammers = {}
-local Webhook = "YOUR_DISCORD_WEBHOOK_URL" -- Replace this with your webhook URL
+local HackCooldown = {}
+local Webhook = "YOUR_DISCORD_WEBHOOK_URL"
+
+-- Compatibility Layer
+function HasJammerItem(Player)
+    if GetResourceState('ox_inventory') == 'started' then
+        return exports.ox_inventory:Search(Player.source, 'count', 'signal_jammer') > 0
+    else
+        return Player.Functions.GetItemByName('signal_jammer') ~= nil
+    end
+end
+
+function RemoveJammerItem(Player)
+    if GetResourceState('ox_inventory') == 'started' then
+        exports.ox_inventory:RemoveItem(Player.source, 'signal_jammer', 1)
+    else
+        Player.Functions.RemoveItem('signal_jammer', 1)
+    end
+end
+
+QBCore.Commands.Add('disablejammers', 'Force disable all active jammers', {}, false, function(source)
+    local Player = QBCore.Functions.GetPlayer(source)
+    if not Player or Player.PlayerData.job.name ~= 'admin' then
+        TriggerClientEvent('QBCore:Notify', source, 'You are not authorized to use this command.', 'error')
+        return
+    end
+    for _, player in pairs(QBCore.Functions.GetPlayers()) do
+        TriggerClientEvent('drz-jammer:forceDisable', tonumber(player))
+    end
+    print('[Jammer] All active jammers have been disabled by an admin.')
+end)
 
 RegisterServerEvent('drz-jammer:placeJammer', function(coords)
     local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+    if not HasJammerItem(Player) then
+        DropPlayer(src, 'Exploit detected: Tried to place jammer without item.')
+        return
+    end
+    RemoveJammerItem(Player)
+
     if not HackCooldown[src] then HackCooldown[src] = { last = 0, fails = 0 } end
 
     local now = os.time()
@@ -18,8 +55,6 @@ RegisterServerEvent('drz-jammer:placeJammer', function(coords)
         HackCooldown[src].fails = 0
     end
     HackCooldown[src].last = now
-    local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return end
 
     local jammerId = tostring(math.random(100000, 999999))
 
@@ -31,8 +66,9 @@ RegisterServerEvent('drz-jammer:placeJammer', function(coords)
     }
 
     TriggerClientEvent('drz-jammer:activateJammer', src, ActiveJammers[jammerId])
-    TriggerClientEvent('InteractSound_CL:PlayOnCoords', -1, coords, 'jammer_noise.ogg', 0.8)
+    TriggerClientEvent('drz-jammer:playNativeSound', -1, coords)
 
+    -- Discord Logging
     local identifiers = GetPlayerIdentifiers(src)
     local steam, license = "N/A", "N/A"
     for _, id in pairs(identifiers) do
