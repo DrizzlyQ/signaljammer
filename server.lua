@@ -16,7 +16,7 @@ function RemoveJammerItem(Player)
     if GetResourceState('ox_inventory') == 'started' then
         exports.ox_inventory:RemoveItem(Player.source, 'signal_jammer', 1)
     else
-        Player.Functions.RemoveItem('signal_jammer', 1)
+        Player.Functions.RemoveItem(Player.source, 'signal_jammer', 1)
     end
 end
 
@@ -68,7 +68,6 @@ RegisterServerEvent('drz-jammer:placeJammer', function(coords)
     TriggerClientEvent('drz-jammer:activateJammer', src, ActiveJammers[jammerId])
     TriggerClientEvent('drz-jammer:playNativeSound', -1, coords)
 
-    -- Discord Logging
     local identifiers = GetPlayerIdentifiers(src)
     local steam, license = "N/A", "N/A"
     for _, id in pairs(identifiers) do

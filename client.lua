@@ -2,18 +2,24 @@ local QBCore = exports['qb-core']:GetCoreObject()
 local jammerData = nil
 local jammerEntity = nil
 local isJammerActive = false
+local jammerZone = nil
 
 RegisterNetEvent('drz-jammer:playNativeSound', function(coords)
     local soundId = GetSoundId()
     PlaySoundFromCoord(soundId, 'Crackle', coords.x, coords.y, coords.z, 'DLC_HEISTS_BIOLAB_FINALE_SOUNDS', false, 0, false)
 end)
 
+-- Force disable from admin
 RegisterNetEvent('drz-jammer:forceDisable', function()
     if isJammerActive then
         isJammerActive = false
         if jammerEntity then
             DeleteEntity(jammerEntity)
             jammerEntity = nil
+        end
+        if jammerZone then
+            jammerZone:remove()
+            jammerZone = nil
         end
         QBCore.Functions.Notify('All signal jammers were disabled by an admin.', 'error')
     end
@@ -48,26 +54,29 @@ RegisterNetEvent('drz-jammer:activateJammer', function(data)
     PlaceObjectOnGroundProperly(jammerEntity)
     SetEntityAsMissionEntity(jammerEntity, true, true)
 
-    CreateThread(function()
-        while isJammerActive do
-            local myCoords = GetEntityCoords(PlayerPedId())
-            local dist = #(myCoords - jammerData.coords)
-            if dist < jammerData.range then
-                if exports["lb-phone"]:IsPhoneOpen() then
-                    TriggerEvent("lb-phone:forceClose")
-                end
-                NetworkSetTalkerProximity(1.0)
-            else
-                NetworkSetTalkerProximity(15.0)
+    jammerZone = lib.zones.sphere({
+        coords = jammerData.coords,
+        radius = jammerData.range,
+        inside = function()
+            if exports["lb-phone"]:IsPhoneOpen() then
+                TriggerEvent("lb-phone:forceClose")
             end
-            Wait(1000)
-        end
-    end)
+            NetworkSetTalkerProximity(1.0)
+        end,
+        onExit = function()
+            NetworkSetTalkerProximity(15.0)
+        end,
+        debug = false
+    })
 
     Wait(jammerData.battery * 60000)
     PlaySoundFrontend(-1, 'ERROR', 'HUD_AMMO_SHOP_SOUNDSET', true)
     isJammerActive = false
     DeleteEntity(jammerEntity)
     jammerEntity = nil
+    if jammerZone then
+        jammerZone:remove()
+        jammerZone = nil
+    end
     QBCore.Functions.Notify("The jammer's battery is dead.", 'error')
 end)
