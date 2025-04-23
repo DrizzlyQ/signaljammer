@@ -1,52 +1,34 @@
 # QBX Signal Jammer 📡
 
-A highly immersive signal jammer script for QBX-based FiveM servers. Players can place jammers that block phone and radio signals in a configurable radius and can be hacked by others.
+An immersive signal jammer script for FiveM servers based on the QBX Framework. Players can place jammers that block phone and voice radio signals in a configurable area and duration. Includes hackable interaction and RP effects.
 
 ## 🔧 Features
-- Signal blocking within a 50m radius
-- 10-minute battery life
-- Hacking minigame to activate or disable (via [bl_ui](https://github.com/Byte-Labs-Studio/bl_ui))
-- Blinking lights and noise for RP visibility
-- Fully configurable & optimized
+- Blocks voice proximity and lb-phone within a configurable radius (default: 50m)
+- 10-minute battery life per jammer
+- Hackable using `bl_ui` LightsOut minigame
+- Native 3D sound effects (no InteractSound)
+- ox_lib Zones used (no while loops)
+- Admin command to disable all active jammers
+- Fully configurable and performant
 
 ## 📦 Requirements
-- [QBox Framework](https://github.com/Qbox-project)
-- [InteractSound](https://github.com/plunkettscott/interact-sound)
+- [QBX Framework](https://github.com/qbcore-framework)
+- [ox_lib](https://github.com/overextended/ox_lib) (for zone system)
+- [bl_ui](https://github.com/Byte-Labs-Studio/bl_ui) (for hacking minigame)
 - A phone resource like `lb-phone`
-- [bl_ui](https://github.com/Byte-Labs-Studio/bl_ui) for the hacking minigame
-
-## 🔊 Sound Setup
-
-1. Make sure you have [InteractSound](https://github.com/plunkettscott/interact-sound) installed and ensured in your server.cfg:
-```cfg
-ensure interact-sound
-```
-
-2. Place the following sound files in this folder:
-```
-resources/[standalone]/interact-sound/client/html/sounds/
-```
-- `jammer_noise.ogg` – looped static noise when jammer is active
-- `jammer_powerdown.ogg` – shutdown sound when jammer battery dies
-
-3. Optional: Test them by triggering manually with:
-```lua
-TriggerServerEvent('InteractSound_CL:PlayOnCoords', -1, GetEntityCoords(PlayerPedId()), 'jammer_noise.ogg', 0.7)
-```
-
----
 
 ## 🔌 Installation
 
 1. Clone or download this repository into your resources folder:
 ```bash
-git clone https://github.com/yourname/qb-signaljammer.git
+git clone https://github.com/DrizzlyQ/signaljammer.git
 ```
 
-2. Add it to your `server.cfg`:
+2. Ensure dependencies in your `server.cfg`:
 ```cfg
+ensure ox_lib
 ensure bl_ui
-ensure qb-signaljammer
+ensure signaljammer
 ```
 
 3. Add the item in `qb-core/shared/items.lua`:
@@ -63,18 +45,23 @@ ensure qb-signaljammer
 }
 ```
 
-4. Optionally configure `config.lua` for radius and battery time.
+4. Optionally configure `config.lua`:
+```lua
+Config = {}
+Config.JammerRange = 50.0
+Config.BatteryLife = 10 -- minutes
+Config.HackCooldownSeconds = 30
+Config.MaxHackFails = 3
+```
 
-## 📷 Preview
-
-![jammer preview](https://i.imgur.com/vTK2wu9.png)
-
-## 🪪 License
-
-This resource is licensed under the MIT License. You are free to modify, distribute, and use it in private or public servers with attribution.
-
----
+## 🛠 Tech Stack
+- ✅ ox_lib zones (no while loops)
+- ✅ bl_ui LightsOut hacking
+- ✅ Native sound effects via `PlaySoundFromCoord`
+- ✅ Compatible with both `qb-inventory` and `ox_inventory`
 
 ## 👥 Credits
-Script by Drizzly 
-Hacking UI by Byte-Labs `bl_ui`
+Script by Drizzly  
+ 
+Hacking UI by Byte-Labs `bl_ui`  
+ox_lib Integration by Overextended
