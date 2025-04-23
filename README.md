@@ -61,7 +61,7 @@ Config.MaxHackFails = 3
 - ✅ Compatible with both `qb-inventory` and `ox_inventory`
 
 ## 👥 Credits
-Script by Drizzly  
+Script by Drizzly & Sxetikos
  
 Hacking UI by Byte-Labs `bl_ui`  
 ox_lib Integration by Overextended
